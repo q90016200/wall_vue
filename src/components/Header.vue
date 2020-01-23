@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <b-navbar toggleable="lg" type="dark" variant="info" >
+    <!-- <div > -->
+        <b-navbar toggleable="lg" type="dark" variant="info" :sticky="true"  >
             <b-navbar-brand href="/">Wall</b-navbar-brand>
 
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
@@ -22,7 +22,7 @@
             
 
         </b-navbar>
-    </div>
+    <!-- </div> -->
 </template>
 
 <script>
