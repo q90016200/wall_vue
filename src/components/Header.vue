@@ -7,20 +7,21 @@
             <b-collapse id="nav-collapse" is-nav>
 
                 <b-navbar-nav>
-                    <router-link to="/about">
-                        <b-nav-item href="/about">About</b-nav-item>
+                    <router-link to="/posts">
+                        <b-nav-item href="/posts">Posts</b-nav-item>
                     </router-link>
                     <!-- <b-nav-item href="#" disabled>Disabled</b-nav-item> -->
                 </b-navbar-nav>
 
                 <!-- Right aligned nav items -->
-                <b-navbar-nav class="ml-auto" v-if="!loginStatus">
-                    <b-nav-item to="/login">login</b-nav-item>
+                <b-navbar-nav class="ml-auto" v-if="!isLogin">
+                    <b-nav-item to="/login" >login</b-nav-item>
                     <b-nav-item to="/register">register</b-nav-item>
                 </b-navbar-nav>
+                <b-navbar-nav class="ml-auto" v-else>
+                    <b-nav-item @click.prevent="logout">logout</b-nav-item>
+                </b-navbar-nav>
             </b-collapse>
-            
-
         </b-navbar>
     <!-- </div> -->
 </template>
@@ -28,13 +29,38 @@
 <script>
 export default {
     name: 'Header',
-    props: {
-        
-    },
+    props: ['accessToken'],
     data: function() {
         return {
-            loginStatus : false,
+            access_token : '',
         }
+    },
+    methods: {
+        // 登出
+        logout: function() {
+            let vm = this;
+            vm.$emit('logout', '');
+        }
+    },
+    watch: {
+        accessToken: function(token) {
+            let vm = this;
+            vm.access_token = token;
+        }
+    },
+    computed: {
+        isLogin: function () {
+            let vm = this;
+            if (vm.accessToken != '' && vm.accessToken != null) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
+    created : function () {
+        let vm = this;
+        vm.access_token = vm.accessToken;
     }
 }
 </script>

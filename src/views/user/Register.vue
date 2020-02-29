@@ -1,7 +1,8 @@
 <template>
   <div class="register mt-3">
     <b-container fluid>
-        <b-form >
+        <!-- <FacebookLogin /> -->
+        <b-form @submit.prevent="submitRegisterForm">
             <b-form-group
                 id="input-group-1"
                 class="text-left"
@@ -27,10 +28,10 @@
             >
                 <b-form-input
                     id="input-2"
-                    v-model="form.username"
+                    v-model="form.name"
                     type="text"
                     required
-                    placeholder="Enter username"
+                    placeholder="Enter name"
                 ></b-form-input>
             </b-form-group>
 
@@ -71,7 +72,7 @@
             </b-form-group>
 
 
-            <b-button type="submit" variant="primary">Submit</b-button>
+            <b-button type="submit" variant="primary" >Submit</b-button>
             <b-button type="reset" variant="danger" class="ml-3" v-on:click="resetRegisterForm">Reset</b-button>
         </b-form>
     </b-container>
@@ -82,18 +83,21 @@
 // @ is an alias to /src
 // import HelloWorld from '@/components/HelloWorld.vue'
 
+// import FacebookLogin from '@/components/FacebookLogin.vue'
+
 var _ = require('lodash');
 
 export default {
     name: 'register',
     components: {
-    // HelloWorld
+    // HelloWorld,
+        // FacebookLogin,
     },
     data: function() {
         return {
             form : {
                 email: '',
-                username: '',
+                name: '',
                 password: '',
                 confirmPassword: '',
             },
@@ -108,11 +112,8 @@ export default {
         resetRegisterForm: function(evt) {
             evt.preventDefault();
             
-            // eslint-disable-next-line no-console
-            console.log("123");
-
             this.form.email = '';
-            this.form.username = '';
+            this.form.name = '';
             this.form.password = '';
             this.form.confirmPassword = '';
             // this.$router.push("/");
@@ -121,6 +122,25 @@ export default {
         // 送出表單
         submitRegisterForm: function(evt) {
             evt.preventDefault();
+            let vm = this;
+
+            // eslint-disable-next-line no-console
+            console.log(vm.form.email);
+            
+            this.axios.post('/api/auth/register', {
+                email: vm.form.email,
+                name: vm.form.name,
+                password: vm.form.password,
+                password_confirmation: vm.form.confirmPassword,
+            })
+            .then(function (response) {
+                // eslint-disable-next-line no-console
+                console.log(response);
+            })
+            .catch(function (error) {
+                // eslint-disable-next-line no-console
+                console.log(error);
+            });
 
             
         },
@@ -148,8 +168,16 @@ export default {
             this.debouncedCheckPassword();
             
         }
-    },created: function () { // 建立 component 時
-        // 建立事件延遲
+    },
+    beforeCreate : function() {
+        let access_token = localStorage.getItem('access_token');
+
+        if (access_token != '' && access_token != null) {
+            this.$router.push("/");
+        }
+    },
+    created: function () { // 建立 component 時
+        // 建立事件延遲 for confirmPassword
         this.debouncedCheckPassword = _.debounce(this.checkPassword, 800)
     }
 }
