@@ -74,7 +74,6 @@ export default {
                 if (response.data) {
                     
                     vm.$emit('login', response.data.access_token);
-                    
                     vm.$router.push("/");
 
                 } else {

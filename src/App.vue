@@ -37,16 +37,20 @@ export default {
             vm.loginStatus = true;
             vm.accessToken = access_token;
 
-            // this.axios.post('/api/auth/me', {},
-            // { 
-            //     headers: {
-            //         "Authorization" : "Bearer " + access_token
-            //     }
-            // })
-            // .then(function (response) {
-            //     // eslint-disable-next-line no-console
-            //     console.log(response);
+            this.axios.post('/api/auth/me', {},
+            { 
+                headers: {
+                    "Authorization" : "Bearer " + access_token
+                }
+            })
+            .then(function (response) {
+                // eslint-disable-next-line no-console
+                console.log(response);
 
+            });
+
+            // vm.$store.dispatch("checkLogin", {
+            //     accessToken: access_token,
             // });
 
         }
