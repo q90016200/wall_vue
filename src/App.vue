@@ -49,10 +49,6 @@ export default {
 
             });
 
-            // vm.$store.dispatch("checkLogin", {
-            //     accessToken: access_token,
-            // });
-
         }
     },
     methods: {
