@@ -4,9 +4,9 @@
             <router-link to="/">Home</router-link> |
             <router-link to="/about">About</router-link>
         </div> -->
-        <Header :accessToken="accessToken" @logout="logout" />
+        <Header @logout="logout" />
 
-        <router-view v-on:login="login"  />
+        <router-view />
 
     </div>
 </template>
@@ -22,69 +22,21 @@ export default {
     },
     data: function() {
         return {
-            loginStatus : false,
-            accessToken : '',
         }
     },
     created : function () {
-        let access_token = localStorage.getItem('access_token');
+        let accessToken = localStorage.getItem('token');
         let vm = this;
 
-        // eslint-disable-next-line no-console
-        // console.log("token:" + access_token);
-
-        if (access_token != '' && access_token != null) {
-            vm.loginStatus = true;
-            vm.accessToken = access_token;
-
-            this.axios.post('/api/auth/me', {},
-            { 
-                headers: {
-                    "Authorization" : "Bearer " + access_token
-                }
-            })
-            .then(function (response) {
-                // eslint-disable-next-line no-console
-                console.log(response);
-
-            });
-
+        if (accessToken != '' && accessToken != null) {
+            vm.$store.dispatch("logined", accessToken);
         }
     },
     methods: {
-        // 登入
-        login: function (token) {
-            let vm = this;
-            
-            // eslint-disable-next-line no-console
-            // console.log(token);
-
-            localStorage.setItem('access_token', token)
-
-            vm.loginStatus = true;
-            vm.accessToken = token;
-        },
         // 登出
         logout: function() {
             let vm = this;
-
-            localStorage.removeItem('access_token');
-
-            this.axios.post('/api/auth/logout', {}, 
-            { 
-                headers: {
-                    "Authorization" : "Bearer " + vm.accessToken
-                }
-            })
-            .then(function (response) {
-                // handle success
-                // eslint-disable-next-line no-console
-                console.log(response);
-
-                vm.loginStatus = false;
-                vm.accessToken = '';
-            });
-            
+            vm.$store.dispatch('logout');
         }
     },
 }

@@ -29,10 +29,10 @@
 <script>
 export default {
     name: 'Header',
-    props: ['accessToken'],
+    props: [],
     data: function() {
         return {
-            access_token : '',
+            
         }
     },
     methods: {
@@ -42,16 +42,10 @@ export default {
             vm.$emit('logout', '');
         }
     },
-    watch: {
-        accessToken: function(token) {
-            let vm = this;
-            vm.access_token = token;
-        }
-    },
     computed: {
         isLogin: function () {
             let vm = this;
-            if (vm.accessToken != '' && vm.accessToken != null) {
+            if (vm.$store.getters.logined != '' && vm.$store.getters.logined != null) {
                 return true;
             } else {
                 return false;

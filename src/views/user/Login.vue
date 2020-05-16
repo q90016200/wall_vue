@@ -60,22 +60,18 @@ export default {
     methods: {
         submitLoginForm: function() {
             let vm = this;
-            this.axios.post('/api/auth/login', {
+
+            vm.axios.post('/api/auth/login', {
                 email: vm.form.email,
                 password: vm.form.password,
             })
             .then(function (response) {
                 // eslint-disable-next-line no-console
-                console.log(response);
-
-                // eslint-disable-next-line no-console
-                // console.log(response.data.access_token);
+                console.log(response.data.access_token);
 
                 if (response.data) {
-                    
-                    vm.$emit('login', response.data.access_token);
+                    vm.$store.dispatch('logined', response.data.access_token);
                     vm.$router.push("/");
-
                 } else {
                     alert("login fail");
                 }
@@ -84,14 +80,16 @@ export default {
             .catch(function (error) {
                 // eslint-disable-next-line no-console
                 console.log(error);
+                alert("login fail");
             });
+
+
         }
     },
     beforeCreate : function() {
-        let access_token = localStorage.getItem('access_token');
-
-        if (access_token != '' && access_token != null) {
-            this.$router.push("/");
+        let vm = this;
+        if (vm.$store.logined === true) {
+            vm.$router.push("/");
         }
     }
 }

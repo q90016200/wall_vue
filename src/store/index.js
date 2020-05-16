@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Vue from 'vue'
 import Vuex from 'vuex'
 
@@ -18,15 +19,17 @@ export default new Vuex.Store({
     mutations: { // 更新狀態資料的方法。
         // 用戶登錄成功，存儲 token 並設置
         logined(state, token) {
-            state.auth = true;
+            state.logined = true;
             state.user.token = token;
             localStorage.token = token;
+            axios.defaults.headers.common = { 'Authorization': `bearer ${token}` }
+            
         },
         // 用戶刷新 token 成功，使用新的 token 替換掉本地的token
         refreshToken(state, token) {
             state.user.token = token;
             localStorage.token = token;
-            axios.defaults.headers.common['Authorization'] = state.user.token;
+            axios.defaults.headers.common = { 'Authorization': `bearer ${token}` }
         },
         // 登錄成功後，保存用戶資訊
         profile(state, data) {
@@ -35,46 +38,50 @@ export default new Vuex.Store({
         },
         // 用戶登出，清除用戶數據
         logout(state) {
-            state.user.type = null
-            state.user.name = null
-            state.auth = false
-            state.user.token = null
+            state.logined = false;
+            state.user.type = null;
+            state.user.name = null;
+            state.user.token = null;
 
-            localStorage.removeItem('token')
+            localStorage.removeItem('token');
+            axios.defaults.headers.common['Authorization'] = "";
         }
     },
     actions: {  // 類似 Mutations，但是 Actions 是呼叫 Mutations，且可支援非同步呼叫。
         // 登錄成功後保存用戶信息
         logined({ dispatch, commit }, token) {
             return new Promise(function (resolve, reject) {
-                commit('logined', token)
-                axios.defaults.headers.common['Authorization'] = token
+                commit('logined', token);
                 dispatch('profile').then(() => {
-                    resolve()
+                    resolve();
                 }).catch(() => {
-                    reject()
+                    reject();
                 })
             })
         },
         // 登錄成功後使用 token 拉取用戶的信息
         profile({ commit }) {
             return new Promise(function (resolve, reject) {
-                axios.get('/api/auth/me', {}).then(respond => {
+                console.log("me");
+                axios.post('/api/auth/me', {}).then(respond => {
                     if (respond.status == 200) {
                         commit('profile', respond.data);
                         resolve();
                     } else {
                         reject();
                     }
-                })
+                }).catch (function(){
+                    commit('logout');
+                });
             });
         },
         // 用戶登出，清除用戶資料並重定向至登錄頁面
         logout({ commit }) {
-            commit('logout')
-            axios.post('auth/logout', {}).then(() => {
-                Vue.$router.push({ name: 'login' })
-            })
+            axios.post('/api/auth/logout', {}).then(() => {
+                commit('logout');
+                // Vue.$router.push({ name: 'login' });
+            });
+            
         },
         // 將刷新的 token 保存至本地
         refreshToken({ commit }, token) {
@@ -86,7 +93,7 @@ export default new Vuex.Store({
     },
     getters: {
         logined: function (state) {
-            return state.auth;
+            return state.logined;
         },
         getUserProfile: function (state) {
             return state.user;
