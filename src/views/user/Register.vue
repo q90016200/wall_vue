@@ -170,7 +170,7 @@ export default {
         }
     },
     beforeCreate : function() {
-        let access_token = localStorage.getItem('access_token');
+        let access_token = localStorage.getItem('token');
 
         if (access_token != '' && access_token != null) {
             this.$router.push("/");

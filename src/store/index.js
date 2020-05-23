@@ -60,19 +60,28 @@ export default new Vuex.Store({
             })
         },
         // 登錄成功後使用 token 拉取用戶的信息
-        profile({ commit }) {
+        profile({ commit, dispatch }) {
             return new Promise(function (resolve, reject) {
-                console.log("me");
                 axios.post('/api/auth/me', {}).then(respond => {
                     if (respond.status == 200) {
                         commit('profile', respond.data);
-                        resolve();
+
+                        dispatch('refreshToken').then(() => {
+                            resolve()
+                        }).catch(() => {
+                            console.log("logout");
+                            commit('logout')
+                        })
+                        
                     } else {
-                        reject();
+                        reject()
                     }
-                }).catch (function(){
-                    commit('logout');
+                }).catch(function () {
+                    reject()
                 });
+            }).catch(function () {
+                console.log("logout");
+                commit('logout');
             });
         },
         // 用戶登出，清除用戶資料並重定向至登錄頁面
@@ -84,8 +93,21 @@ export default new Vuex.Store({
             
         },
         // 將刷新的 token 保存至本地
-        refreshToken({ commit }, token) {
-            commit('refreshToken', token)
+        refreshToken({ commit }) {
+            return new Promise(function (resolve, reject) {
+                axios.post('/api/auth/refresh', {}).then((respond) => {
+                    if (respond.status == 200) {
+                        let token = respond.data.access_token
+                        commit('refreshToken', token)
+                        resolve();
+                    } else {
+                        reject();
+                    }
+                }).catch(function () {
+                    commit('logout');
+                });
+            });
+
         },
         // test({ state }, payload){
         //     state.test = payload;

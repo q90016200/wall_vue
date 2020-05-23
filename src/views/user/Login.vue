@@ -66,8 +66,7 @@ export default {
                 password: vm.form.password,
             })
             .then(function (response) {
-                // eslint-disable-next-line no-console
-                console.log(response.data.access_token);
+                // console.log(response.data.access_token);
 
                 if (response.data) {
                     vm.$store.dispatch('logined', response.data.access_token);
@@ -78,7 +77,6 @@ export default {
 
             })
             .catch(function (error) {
-                // eslint-disable-next-line no-console
                 console.log(error);
                 alert("login fail");
             });
