@@ -25,7 +25,7 @@ export default new Vuex.Store({
             axios.defaults.headers.common = { 'Authorization': `bearer ${token}` }
             
         },
-        // 用戶刷新 token 成功，使用新的 token 替換掉本地的token
+        // 用戶刷新 token 成功，使用新的 token 替換掉本地的 token
         refreshToken(state, token) {
             state.user.token = token;
             localStorage.token = token;
